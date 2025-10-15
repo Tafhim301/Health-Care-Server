@@ -3,8 +3,6 @@ import cors from 'cors';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
 import config from './config';
-import { uptime } from 'process';
-import { timeStamp } from 'console';
 import router from './app/routes';
 import cookieParser from 'cookie-parser';
 
