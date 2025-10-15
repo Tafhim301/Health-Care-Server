@@ -9,7 +9,7 @@ const login = catchAsync(
     const result = await authService.login(req.body);
 
 
-    const { accessToken, refreshToken, needPasswordChange } = result;
+    const { accessToken, refreshToken, needPasswordChange,user } = result;
 
     res.cookie("accessToken", accessToken, {
       secure: true,
@@ -30,6 +30,7 @@ const login = catchAsync(
       message: "Logged in successfully",
       data: {
         needPasswordChange,
+        user
       },
     });
   }

@@ -52,6 +52,7 @@ const createAdmin = async (req: Request) => {
       data: {
         email: req.body.user.email,
         password: hashedPassword,
+        role : "ADMIN"
       },
     });
 
@@ -78,6 +79,7 @@ const createDoctor = async (req: Request) => {
       data: {
         email: req.body.user.email,
         password: hashedPassword,
+        role : "DOCTOR"
       },
     });
 

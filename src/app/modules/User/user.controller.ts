@@ -31,8 +31,9 @@ const createAdmin = catchAsync(
 );
 const createDoctor = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-      console.log(req.body)
+
     const result = await UserService.createDoctor(req);
+
 
     sendResponse(res, {
       statusCode: 201,
@@ -58,7 +59,7 @@ const getAllUsers = catchAsync(
     const result = await UserService.getAllUsers(filters, options);
 
     sendResponse(res, {
-      statusCode: 201,
+      statusCode: 200,
       success: true,
       message: "Users retrieved successfully",
       meta: result.metaData,
