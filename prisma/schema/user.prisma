@@ -51,6 +51,7 @@ model Doctor {
 
     @@map("doctors")
     DoctorSpecialties DoctorSpecialties[]
+    Appointment Appointment[]
 }
 
 model Patients {
@@ -65,4 +66,5 @@ model Patients {
     user          User     @relation(fields: [email], references: [email])
 
     @@map("patients")
+    Appointment Appointment[]
 }

@@ -48,7 +48,7 @@ const getAISuggestion = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
    
 
-    const result = await doctorService.getAISuggestion(req.body);
+    const result = await doctorService.getAISuggestions(req.body);
 
     sendResponse(res, {
       statusCode: 200,

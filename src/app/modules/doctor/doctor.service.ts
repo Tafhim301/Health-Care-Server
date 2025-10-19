@@ -6,6 +6,7 @@ import { IDoctorInput } from "./doctor.interface";
 import ApiError from "../../Errors/ApiError";
 import httpStatus from "http-status";
 import { openai } from "../../helper/open-router";
+import { extractJsonFromMessage } from "../../helper/extractJsonFromMessage";
 
 const getAllDoctors = async (filter: any, options: IOptions) => {
 
@@ -152,16 +153,13 @@ const updateDoctor = async (id: string, payload: Partial<IDoctorInput>) => {
 
 }
 
-const getAISuggestion = async (payload: { symptom: string }) => {
-
-    if (!payload.symptom) {
-        throw new ApiError(httpStatus.BAD_REQUEST, "Symptom is required")
-    }
+const getAISuggestions = async (payload: { symptoms: string }) => {
+    if (!(payload && payload.symptoms)) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "symptoms is required!")
+    };
 
     const doctors = await prisma.doctor.findMany({
-        where: {
-            isDeleted: false
-        },
+        where: { isDeleted: false },
         include: {
             DoctorSpecialties: {
                 include: {
@@ -171,26 +169,28 @@ const getAISuggestion = async (payload: { symptom: string }) => {
         }
     });
 
+    console.log("doctors data loaded.......\n");
     const prompt = `
-You are a medical assistant AI. A patient reported the symptom: "${payload.symptom}".
-Here is the list of available doctors and their specialties:
+You are a medical assistant AI. Based on the patient's symptoms, suggest the top 3 most suitable doctors.
+Each doctor has specialties and years of experience.
+Only suggest doctors who are relevant to the given symptoms.
 
-${doctors?.map((doc: any) => {
-        const specialties = doc.DoctorSpecialties.map((ds: any) => ds.specialities.name).join(", ");
-        return `- Dr. ${doc.name} (Specialties: ${specialties})`;
-    }).join("\n")}
+Symptoms: ${payload.symptoms}
 
-Based on the symptom, suggest the **top 3 most relevant doctors** and explain briefly why they are suitable. 
-Return result in valid JSON like with full individual doctor data
+Here is the doctor list (in JSON):
+${JSON.stringify(doctors, null, 2)}
+
+Return your response in JSON format with full individual doctor data. 
 `;
 
-
+    console.log("analyzing......\n")
     const completion = await openai.chat.completions.create({
         model: 'z-ai/glm-4.5-air:free',
         messages: [
             {
-                role: 'system',
-                content: 'You are a helpful medical assistant AI. Which provides doctor suggestions',
+                role: "system",
+                content:
+                    "You are a helpful AI medical assistant that provides doctor suggestions.",
             },
             {
                 role: 'user',
@@ -198,15 +198,11 @@ Return result in valid JSON like with full individual doctor data
             },
         ],
     });
-    console.log(completion.choices[0].message);
 
-
-
-    return doctors
-
-
-
+    const result = await extractJsonFromMessage(completion.choices[0].message)
+    return result;
 }
+
 
 
 
@@ -215,5 +211,5 @@ Return result in valid JSON like with full individual doctor data
 export const doctorService = {
     getAllDoctors,
     updateDoctor,
-    getAISuggestion
+    getAISuggestions
 }
