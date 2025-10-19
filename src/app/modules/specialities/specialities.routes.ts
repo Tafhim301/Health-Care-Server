@@ -1,9 +1,10 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { SpecialtiesController } from './specialties.controller';
-import { SpecialtiesValidtaion } from './specialties.validation';
-import auth from '../../middlewares/auth';
+
 import { UserRole } from '@prisma/client';
 import { fileUploader } from '../../helper/fileUploader';
+import { SpecialtiesController } from './specialities.controller';
+import { SpecialtiesValidtaion } from './specialities.validation';
+import { auth } from '../../middlewares/auth';
 
 
 const router = express.Router();
